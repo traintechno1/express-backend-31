@@ -127,5 +127,21 @@ router.put('/:id', async (req,res)=>{
     }
 })
 
+router.patch("/:id", async (req,res)=>{
+    const userId = req.params.id;
+    const body = req.body;
+
+    const user = await userModel.findByIdAndUpdate(userId, {$set: body}, {new: true});
+
+    if(!user) res.status(404).json({
+        message: "User not found"
+    })
+    else{
+        res.status(200).json({
+            message: "User updated successfully",
+            user
+        })
+    }
+})
 
 module.exports = router;
