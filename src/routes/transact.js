@@ -40,4 +40,22 @@ router.post("/", async (req, res)=>{
    
 })
 
+router.get("/:email", async (req, res)=>{
+    const user_email = req.params.email;
+    
+    const transactions = await transactionModel.find({
+        $or: [{sender_email: user_email}, {receiver_email: user_email}]
+    })
+
+    const result = transactions.map((tx)=>({
+        id: tx._id,
+        amount: tx.amount,
+        timestamp: tx.timestamp,
+        counterparty: tx.sender_email === user_email ? tx.receiver_email: tx.sender_email,
+        type: tx.sender_email === user_email ? "debit": "credit"
+    }));
+    res.json({user_email, transactions: result})
+    
+})
+
 module.exports = router;
